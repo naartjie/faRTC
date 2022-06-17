@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+
+<head>
+  <title>Fable</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="shortcut icon" href="fable.ico" />
+</head>
+
+<body>
+  <div>
+    Peer A
+  </div>
+  <div>
+    <input id="answer-input" placeholder="answer" />
+    <button id="answer-button">Answer + setLocalDescription</button>
+  </div>
+
+  <div>
+    Peer B
+  </div>
+  <div>
+    <input id="remote-description-input" placeholder="remote description" title="remote description" />
+    <input id="ice-candidate-input" placeholder="ice candidate" />
+    <button id="connect-button">Connect</button>
+  </div>
+
+  <code>
+    Info:
+    <div id="candidates"></div>
+  </code>
+
+  <script src="bundle.js"></script>
+</body>
+
+</html>
