@@ -1,20 +1,28 @@
-// Note this only includes basic configuration for development mode.
-// For a more comprehensive configuration check:
-// https://github.com/fable-compiler/webpack-config-template
-
-var path = require("path");
-
 module.exports = {
   mode: "development",
+  devtool: "source-map",
+  // devtool: "eval-source-map",
   entry: "./src/App.fs.js",
   output: {
-    path: path.join(__dirname, "./public"),
+    path: "./public",
     filename: "bundle.js",
   },
   devServer: {
-    publicPath: "/",
-    contentBase: "./public",
+    devMiddleware: {
+      publicPath: "/",
+    },
+    static: {
+      directory: "./public",
+    },
     port: 8001,
   },
-  module: {},
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        enforce: "pre",
+        use: ["source-map-loader"],
+      },
+    ],
+  },
 };
