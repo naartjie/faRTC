@@ -1,10 +1,12 @@
+var path = require("path");
+
 module.exports = {
   mode: "development",
-  devtool: "source-map",
-  // devtool: "eval-source-map",
+  devtool: "eval-source-map",
+  // devtool: "source-map",
   entry: "./src/App.fs.js",
   output: {
-    path: "./public",
+    path: path.join(__dirname, "./public"),
     filename: "bundle.js",
   },
   devServer: {

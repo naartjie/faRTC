@@ -14,11 +14,14 @@ Any modification you do to the F# code will be reflected in the web page after s
 
 > Note: check the "scripts" section in `package.json` to see the commands triggered by the steps above.
 
-## Running the signalling server
+## Running the signaling server
 
 ```sh
-cd ./signalling-server
+cd ./signaling-server
 npm install
 npm start
 ```
 
+## TODOs
+
+- WS reconnects don't work - we lose all connection state

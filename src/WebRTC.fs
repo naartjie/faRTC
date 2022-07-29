@@ -7,9 +7,6 @@ open MessageStream
 
 JsInterop.importAll "webrtc-adapter" |> ignore
 
-[<Emit("{ offerToReceiveAudio: 1 }")>]
-let private offerToReceiveAudioOptions () : RTCOfferOptions = jsNative
-
 [<Emit("new RTCIceCandidate($0)")>]
 let makeRTCIceCandidate (x: obj) : RTCIceCandidate = jsNative
 
@@ -17,22 +14,29 @@ let makeRTCIceCandidate (x: obj) : RTCIceCandidate = jsNative
 let makeRTCSessionDescription (x: obj) : RTCSessionDescriptionInit = jsNative
 
 [<Emit("$0.setLocalDescription()")>]
-let newSchoolSetLocalDescription (agent: RTCPeerConnection) : JS.Promise<RTCSessionDescriptionInit> = jsNative
+let newSchoolSetLocalDescription (agent: RTCPeerConnection) : JS.Promise<unit> = jsNative
+
+[<Emit("$0")>]
+let cast (x: RTCSessionDescription) : RTCSessionDescriptionInit = jsNative
+
+type Signaler = { onmessage: obj; send: obj }
+
+[<Emit("setupPerfectNegotiation($0, $1, $2, $4)")>]
+let setupPerfectNegotiation (pc: RTCPeerConnection) (signaling: DuplexStream<obj>) (polite: bool) : unit = jsNative
 
 module Message =
-    type Signalling =
+    type Signaling =
         | IceCandidate of RTCIceCandidate
         | Offer of RTCSessionDescriptionInit
         | Answer of RTCSessionDescriptionInit
 
     type private Enc = { ``type``: string; data: obj }
 
-    let encode (msg: Signalling) =
+    let encode (msg: Signaling) =
         match msg with
         | IceCandidate candidate ->
             { ``type`` = "candidate"
               data = candidate }
-
         | Offer offer -> { ``type`` = "offer"; data = offer }
         | Answer answer -> { ``type`` = "answer"; data = answer }
         |> JS.JSON.stringify
@@ -59,7 +63,7 @@ module Message =
         | "hello" -> None
         | _ -> failwith "unsupported message type"
 
-let private create () =
+let createPeerConnection () =
     let conf =
         [| RTCIceServer.Create([| "stun:stun3.l.google.com:19302" |]) |]
         |> RTCConfiguration.Create
@@ -70,38 +74,7 @@ let private create () =
 
     RTCPeerConnection.Create(conf)
 
-let private createChannel (agent: RTCPeerConnection) name = agent.createDataChannel name
+// let private createChannel (agent: RTCPeerConnection) name = agent.createDataChannel name
 
-let init (signalling: Stream<Message.Signalling>) (messages: Stream<string>) =
-    let agent = create ()
-    let _chann = createChannel agent "default"
-
-    agent.onicecandidate <-
-        fun ev ->
-            match ev.candidate with
-            | None -> ()
-            | Some candidate ->
-                candidate
-                |> Message.Signalling.IceCandidate
-                |> signalling.Send
-
-    agent.ondatachannel <-
-        fun ev ->
-            ev.channel.onmessage <-
-                fun msg ->
-                    let txt = msg.data.ToString()
-                    messages.Send(txt)
-
-    promise {
-        let! offer = newSchoolSetLocalDescription agent
-
-        offer
-        |> Message.Signalling.Offer
-        |> signalling.Send
-    }
-    |> ignore
-
-    agent
-
-let answer (agent: RTCPeerConnection) (answer: RTCSessionDescriptionInit) =
-    promise { do! agent.setRemoteDescription answer }
+[<Emit("console.log('DEBUG ' + $0, $1); window[$0] = $1")>]
+let private setGlobal (name: string) (value: obj) : unit = jsNative
