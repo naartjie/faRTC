@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>5:00</title>
+</head>
+
+<body>
+  <script>
+    let title = document.querySelector('title');
+    let sec = 60 * 5;
+    setInterval(() => {
+      sec--;
+      console.log(sec)
+
+      const minutes = parseInt(sec / 60);
+      const seconds = parseInt(sec % 60);
+
+      title.textContent = `${minutes}:${seconds}`;
+    }, 1000)
+  </script>
+</body>
+
+</html>
