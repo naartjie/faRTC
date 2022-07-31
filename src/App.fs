@@ -78,10 +78,28 @@ module App =
 
         signalingWs, dataApp
 
+    let updateUI (peers: Map<string, (DuplexStream<obj> * DuplexStream<string>)>) =
+        let peersEl = document.getElementById ("peers")
+
+        let peerInfo name =
+            $"""
+            <div>{name}</div>
+            """
+
+        peersEl.innerHTML <-
+            $"""
+            <div> My UID: %s{myUid} </div>
+            <div> Number of connections = %d{peers.Count} </div>
+            {peers.Keys
+             |> Seq.map peerInfo
+             |> String.concat " "}
+            """
+
     let addNewConnection myUid otherUid polite =
         let signaling, dataChan = setupPeerConnection polite
 
         peers <- peers.Add(otherUid, (signaling, dataChan))
+        updateUI peers
 
         dataChan.Send("testing data, are we connected yet buddy?")
         dataChan.Subscribe(fun msg -> console.log ($"got msg from [%s{otherUid}]: %s{msg}"))
@@ -91,6 +109,9 @@ module App =
             msg?dest <- otherUid
             websocket.send (msg |> JS.JSON.stringify))
 
+    let logLoud str =
+        console.log ($"%%c%s{str}", "color: green; background: yellow; font-size: 30px")
+
     websocket.onmessage <-
         fun msg ->
             let payload = msg.data.ToString() |> JS.JSON.parse
@@ -99,10 +120,13 @@ module App =
 
             | "config::own_uid" as x ->
                 myUid <- payload?data?uid
+                setGlobal "uid" (fun () -> logLoud myUid)
+                updateUI peers
+                let foo = assert false
 
                 promise {
                     do! Promise.sleep 400
-                    console.log ($"%%c%s{myUid}", "color: green; background: yellow; font-size: 30px")
+                    logLoud myUid
                 }
                 |> ignore
 
@@ -123,6 +147,7 @@ module App =
             | "config::remove_uid" as x ->
                 let uid = payload?data?uid
                 peers <- peers.Remove(uid)
+                updateUI peers
 
             | x when x.StartsWith("signaling::") ->
                 let src = payload?src

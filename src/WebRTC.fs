@@ -21,7 +21,7 @@ let cast (x: RTCSessionDescription) : RTCSessionDescriptionInit = jsNative
 
 type Signaler = { onmessage: obj; send: obj }
 
-[<Emit("setupPerfectNegotiation($0, $1, $2, $4)")>]
+[<Import("default", from = "./PerfectNegotiation")>]
 let setupPerfectNegotiation (pc: RTCPeerConnection) (signaling: DuplexStream<obj>) (polite: bool) : unit = jsNative
 
 module Message =
@@ -73,8 +73,6 @@ let createPeerConnection () =
             x
 
     RTCPeerConnection.Create(conf)
-
-// let private createChannel (agent: RTCPeerConnection) name = agent.createDataChannel name
 
 [<Emit("console.log('DEBUG ' + $0, $1); window[$0] = $1")>]
 let private setGlobal (name: string) (value: obj) : unit = jsNative
