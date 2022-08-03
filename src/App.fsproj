@@ -3,9 +3,10 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Timer.fs" />
+
     <Compile Include="MessageStream.fs" />
     <Compile Include="WebRTC.fs" />
-    <!-- <Compile Include="Timer.fs" /> -->
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>

@@ -81,7 +81,7 @@ let countdownTimer () =
             let setTitle newRemaining =
                 if props.updateTitle.Value then
                     let newTitle =
-                        $"""{timeStr false newRemaining} {if running then "" else "⏸"}"""
+                        $"""{timeStr false newRemaining}{if running then "" else " ⏸"}"""
 
                     if document.title <> newTitle then
                         document.title <- newTitle

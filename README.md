@@ -24,4 +24,5 @@ npm start
 
 ## TODOs
 
+- WS connection is hardcoded to localhost:8002
 - WS reconnects - do we lose all connection state?

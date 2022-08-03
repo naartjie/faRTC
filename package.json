@@ -1,9 +1,10 @@
 {
   "scripts": {
     "clean": "dotnet fable clean --yes && rm -rf dist",
-    "postinstall": "dotnet tool restore",
-    "start": "dotnet fable watch src --sourceMaps --run vite",
-    "build": "dotnet fable src && vite build"
+    "install": "dotnet tool restore",
+    "start": "dotnet fable watch src --sourceMaps --run vite --clearScreen=false",
+    "build": "dotnet fable src && vite build",
+    "preview": "dotnet fable src && vite preview"
   },
   "devDependencies": {
     "@web/test-runner": "^0.13.31",
