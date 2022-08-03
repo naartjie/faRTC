@@ -7,13 +7,7 @@
     "preview": "dotnet fable src && vite preview"
   },
   "devDependencies": {
-    "@web/test-runner": "^0.13.31",
-    "@web/test-runner-commands": "^0.6.3",
-    "source-map-loader": "4.0.0",
-    "vite": "^3.0.4",
-    "webpack": "5.74.0",
-    "webpack-cli": "4.10.0",
-    "webpack-dev-server": "^4.9.3"
+    "vite": "^3.0.4"
   },
   "dependencies": {
     "lit": "^2.2.8",
