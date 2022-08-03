@@ -1,6 +1,6 @@
 ## Requirements
 
-* [dotnet SDK](https://www.microsoft.com/net/download/core) 5.0 or higher
+* [dotnet SDK](https://www.microsoft.com/net/download/core) 6.0 or higher
 * [node.js](https://nodejs.org)
 * An F# editor like Visual Studio, Visual Studio Code with [Ionide](http://ionide.io/) or [JetBrains Rider](https://www.jetbrains.com/rider/)
 
@@ -24,4 +24,4 @@ npm start
 
 ## TODOs
 
-- WS reconnects don't work - we lose all connection state
+- WS reconnects - do we lose all connection state?
