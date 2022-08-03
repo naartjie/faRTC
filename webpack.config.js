@@ -4,7 +4,7 @@ module.exports = {
   mode: "development",
   // devtool: "eval-source-map",
   devtool: "source-map",
-  entry: "./src/App.fs.js",
+  entry: "./src/Timer.fs.js",
   output: {
     path: path.join(__dirname, "./public"),
     filename: "bundle.js",

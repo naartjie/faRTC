@@ -2,26 +2,34 @@
 <html lang="en">
 
 <head>
+  <title>Timer</title>
   <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>5:00</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link rel="shortcut icon" href="fable.ico" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@1,800&display=swap" rel="stylesheet">
+  <style>
+    /* Used to hide custom components until they are defined and prevent a flash of unstyled content */
+    *:not(:defined) {
+      display: none
+    }
+
+    html,
+    body {
+      overflow-y: hidden;
+      height: 100%;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 36px;
+    }
+  </style>
+</head>
 </head>
 
 <body>
-  <script>
-    let title = document.querySelector('title');
-    let sec = 60 * 5;
-    setInterval(() => {
-      sec--;
-      console.log(sec)
-
-      const minutes = parseInt(sec / 60);
-      const seconds = parseInt(sec % 60);
-
-      title.textContent = `${minutes}:${seconds}`;
-    }, 1000)
-  </script>
+  <countdown-timer duration="3" />
+  <countdown-timer duration="60" />
+  <countdown-timer duration="300" update-title />
+  <script src="./bundle.js"></script>
 </body>
 
 </html>
