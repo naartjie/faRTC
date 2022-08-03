@@ -109,9 +109,11 @@ let countdownTimer () =
             :host {
               display: inline-block;
               min-width: 4em;
-              text-align: center;
               padding: 0.2em;
               margin: 0.2em 0.1em;
+              text-align: center;
+              font-family: 'JetBrains Mono', monospace;
+              font-size: 36px;
             }
             footer {
               user-select: none;
