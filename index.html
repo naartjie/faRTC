@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>faRTC</title>
+  <meta http-equiv='Content-Type' content='text/html; charset=utf-8'>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" href="fable.ico" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@1,800&display=swap" rel="stylesheet">
+
+  <!-- Used to hide custom components until they are defined and prevent a flash of unstyled content -->
+  <style>
+    *:not(:defed) {
+      display: none
+    }
+
+    html,
+    body {
+      overflow-y: hidden;
+      height: 100%;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+    }
+  </style>
+</head>
+
+<body>
+  <app-root></app-root>
+  <div id="peers"></div>
+  <script type="module" src="./src/App.fs.js"></script>
+</body>
+
+</html>
