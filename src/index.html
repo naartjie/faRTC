@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="cyberpunk">
 
 <head>
   <title>faRTC</title>
@@ -8,6 +8,9 @@
   <link rel="shortcut icon" href="fable.ico" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@1,800&display=swap" rel="stylesheet">
+
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@2.20.0/dist/full.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
 
   <!-- Used to hide custom components until they are defined and prevent a flash of unstyled content -->
   <style>
@@ -23,12 +26,17 @@
       font-size: 12px;
     }
   </style>
+  <script type="module" src="./App.fs.js"></script>
 </head>
 
 <body>
+  <div>
+    <countdown-timer duration="300" update-title></countdown-timer>
+  </div>
+  <hr>
   <app-root></app-root>
+  <hr>
   <div id="peers"></div>
-  <script type="module" src="./App.fs.js"></script>
 </body>
 
 </html>

@@ -6,6 +6,8 @@ open System
 
 let private hmr = HMR.createToken ()
 
+let register () = ()
+
 module Icons =
     let replay =
         html
@@ -18,6 +20,10 @@ module Icons =
     let play =
         html
             $"""<svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"><title>Start</title><path d="M0 0h24v24H0V0z" fill="none"/><path d="M10 8.64L15.27 12 10 15.36V8.64M8 5v14l11-7L8 5z"/></svg>"""
+
+    let noIcon =
+        html
+            $"""<svg xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24" height="24px" viewBox="0 0 24 24" width="24px" fill="#000000"></svg>"""
 
 [<LitElement("countdown-timer")>]
 let countdownTimer () =
@@ -66,10 +72,16 @@ let countdownTimer () =
         let min = remaining / 1000 / 60
         let sec = remaining / 1000 % 60
 
-        $"""{min}:%02d{sec}{if showHundredths then
-                                $".%02d{remaining / 10 % 100}"
-                            else
-                                ""}"""
+        $"""{min}m%02d{sec}s{if showHundredths then
+                                 $"%02d{remaining / 10 % 100}"
+                             else
+                                 ""}"""
+
+    let minSecHun remaining =
+        let min = remaining / 1000 / 60
+        let sec = remaining / 1000 % 60
+        let hun = remaining / 10 % 100
+        min, sec, hun
 
     Hook.useEffectOnChange (
         (running, end_),
@@ -103,40 +115,40 @@ let countdownTimer () =
                 member __.Dispose() = window.clearInterval interval })
     )
 
-    let className =
-        Hook.use_scoped_css
-            """
-            :host {
-              display: inline-block;
-              min-width: 4em;
-              padding: 0.2em;
-              margin: 0.2em 0.1em;
-              text-align: center;
-              font-family: 'JetBrains Mono', monospace;
-              font-size: 36px;
-            }
-            footer {
-              user-select: none;
-              font-size: 0.6em;
-            }
-            """
-
     let fn, icon =
         if running then
-            (pause, Icons.pause)
+            (pause,
+             if remaining > 0 then
+                 Icons.pause
+             else
+                 Icons.noIcon)
         else
-            (start, Icons.play)
+            (start,
+             if remaining > 0 then
+                 Icons.play
+             else
+                 Icons.noIcon)
+
+    let (m, s, _) = minSecHun remaining
 
     html
         $"""
-        <div class="{className}">
-            {timeStr true remaining}
-            <footer>
-                {if remaining > 0 then
-                     html $"<span @click={Ev(fun _ -> fn ())}> {icon} </span>"
-                 else
-                     html $""}
-                <span @click={Ev(fun _ -> reset ())}>{Icons.replay}</span>
-            </footer>
-        </div>
+            <div class="grid grid-flow-col gap-5 text-center auto-cols-max justify-center">
+                <div class="flex flex-col">
+                    <span class="countdown font-mono text-5xl">
+                    <span style="--value:{m};"></span>
+                    </span>
+                    min
+                </div>
+                <div class="flex flex-col">
+                    <span class="countdown font-mono text-5xl">
+                    <span style="--value:{s};"></span>
+                    </span>
+                    sec
+                </div>
+            </div>
+            <div class="btn-group grid grid-flow-col text-center auto-cols-max justify-center">
+                <button @click={Ev(fun _ -> fn ())} class="btn btn-sm btn-secondary">{icon}</button>
+                <button @click={Ev(fun _ -> reset ())} class="btn btn-sm btn-secondary">{Icons.replay}</button>
+            </div>
         """

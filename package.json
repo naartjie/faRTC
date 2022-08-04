@@ -3,7 +3,7 @@
     "clean": "dotnet fable clean --yes && rm -rf dist",
     "install": "dotnet tool restore",
     "start": "dotnet fable watch src --sourceMaps --run vite --clearScreen=false",
-    "build": "dotnet fable src && vite build",
+    "build": "dotnet fable src && vite build --emptyOutDir",
     "preview": "dotnet fable src && vite preview"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 # vite
-dist
+/_dist
 
 # Fable generated files
 .fable

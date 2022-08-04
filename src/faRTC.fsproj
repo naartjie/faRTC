@@ -3,14 +3,16 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Types.fs" />
     <Compile Include="Timer.fs" />
-
     <Compile Include="MessageStream.fs" />
     <Compile Include="WebRTC.fs" />
+    <Compile Include="Signaling.fs" />
     <Compile Include="App.fs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Fable.Browser.Dom" Version="2.10.0" />
+    <PackageReference Include="Fable.Browser.Url" Version="1.1.0" />
     <PackageReference Include="Fable.Browser.WebRTC" Version="1.4.0" />
     <PackageReference Include="Fable.Browser.WebSocket" Version="1.2.0" />
     <PackageReference Include="Fable.Core" Version="3.7.1" />

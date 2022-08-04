@@ -3,11 +3,9 @@ import { resolve } from "path";
 
 export default defineConfig({
   root: "./src",
-  server: {
-    port: 8001,
-    strictPort: true,
-  },
+  publicDir: "../public",
   build: {
+    outDir: "../_dist",
     rollupOptions: {
       input: {
         main: resolve(__dirname, "./src/index.html"),
@@ -15,4 +13,16 @@ export default defineConfig({
       },
     },
   },
+  server: {
+    open: true,
+    port: 8001,
+    strictPort: true,
+    proxy: {
+      "/ws": {
+        target: "ws://localhost:8002/",
+        ws: true,
+      },
+    },
+  },
+  preview: { port: 8000 },
 });

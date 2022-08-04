@@ -8,7 +8,8 @@ const { generateName } = require("./names");
 const app = express();
 const { PORT: port = "8002" } = process.env;
 const server = http.createServer(app);
-const wss = new WebSocket.Server({ server });
+const path = "/ws";
+const wss = new WebSocket.Server({ server, path });
 
 const sendTo = (conn, message) => {
   console.log(`TO >==> [${conn.uid}]`, message);
@@ -92,5 +93,5 @@ wss.on("connection", (conn) => {
 });
 
 server.listen(port, () =>
-  console.log(`Signaling Server running on port: ${port}`)
+  console.log(`Signaling Server running on :${port}${path}`)
 );
