@@ -1,6 +1,5 @@
 module App
 
-// open Browser
 open Elmish
 open Lit
 open Lit.Elmish
@@ -10,23 +9,42 @@ let private hmr = HMR.createToken ()
 
 Timer.register ()
 
-let init () = Initializing, Cmd.none
-
-let update msg model =
-    (match model with
-     | Initializing ->
-         match msg with
-         | Connect me -> Connected { me = me; others = [] }
-         | _ -> failwith "invalid state change"
-     | Connected info ->
-         match msg with
-         | PeerAdded peer -> Connected { info with others = info.others |> List.append [ peer ] }
-         | PeerRemoved peer -> Connected { info with others = info.others |> List.except [ peer ] }
-         | _ -> failwith "invalid state change"),
+let init () =
+    { ActiveTab = Connection
+      Connection = Initializing },
     Cmd.none
 
+let update msg model =
+    (match msg, model.Connection with
+     | (Connect me, Initializing) -> { model with Connection = Connected { me = me; others = [] } }
+     | (PeerAdded peer, Connected info) ->
+         { model with Connection = Connected { info with others = info.others |> List.append [ peer ] } }
+     | (PeerRemoved peer, Connected info) ->
+         { model with Connection = Connected { info with others = info.others |> List.except [ peer ] } }
+     | (SelectTab tab, _) -> { model with ActiveTab = tab }
+     | _ -> failwith "invalid state change"),
+    Cmd.none
+
+let connectionInfo =
+    function
+    | Initializing -> html $"""establishing connection"""
+    | Connected info ->
+        html
+            $"""
+              <div><small><code>I am:</code></small> {info.me.uid}</div>
+              <div>I am connected to {info.others.Length} other peer(s)</div>
+              {info.others
+               |> Lit.mapUnique (fun o -> o.uid) (fun o -> html $"<div> → {o.uid}</div>")}
+            """
+
+let renderTab model =
+    match model.ActiveTab with
+    | Connection -> connectionInfo model.Connection
+    | State -> html $""" <div>render state</div> """
+    | Vote -> html $""" <div>render vote</div> """
+
 [<LitElement("app-root")>]
-let App () =
+let app () =
     Hook.useHmr (hmr)
 
     let _ =
@@ -36,17 +54,25 @@ let App () =
 
     Signaling.register dispatch
 
-    // let _timeout =
-    //     Browser.Dom.window.setTimeout ((fun () -> dispatch (Connect { uid = "foo" })), 2000)
+    let tabActive = "tab-active"
+    let noStyle = ""
 
-    match model with
-    | Initializing -> html $"""establishing connection"""
-    | Connected info ->
-        html
-            $"""
-              <div><small><code>own uid:</code></small>{info.me.uid}</div>
-              <div>connected to {info.others.Length} other peer(s)</div>
-              {info.others
-               |> List.map (fun o -> o.uid)
-               |> String.concat " "}
-            """
+    html
+        $"""
+        <h2>Distributed Webs Machine</h2>
+        <div class="tabs">
+            <a @click={Ev(fun _ -> dispatch (SelectTab Connection))} class="tab tab-bordered {if model.ActiveTab = Connection then
+                                                                                                  tabActive
+                                                                                              else
+                                                                                                  noStyle}">Nodes</a>
+            <a @click={Ev(fun _ -> dispatch (SelectTab State))} class="tab tab-bordered {if model.ActiveTab = State then
+                                                                                             tabActive
+                                                                                         else
+                                                                                             noStyle}">State</a>
+            <a @click={Ev(fun _ -> dispatch (SelectTab Vote))} class="tab tab-bordered {if model.ActiveTab = Vote then
+                                                                                            tabActive
+                                                                                        else
+                                                                                            noStyle}">Vote</a>
+        </div>
+        {renderTab model}
+        """

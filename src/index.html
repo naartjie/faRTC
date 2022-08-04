@@ -17,26 +17,12 @@
     *:not(:defed) {
       display: none
     }
-
-    html,
-    body {
-      overflow-y: hidden;
-      height: 100%;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-    }
   </style>
   <script type="module" src="./App.fs.js"></script>
 </head>
 
 <body>
-  <div>
-    <countdown-timer duration="300" update-title></countdown-timer>
-  </div>
-  <hr>
   <app-root></app-root>
-  <hr>
-  <div id="peers"></div>
 </body>
 
 </html>

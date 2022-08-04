@@ -28,10 +28,8 @@ let websocket =
     url.protocol <-
         match window.location.protocol with
         | "https:" -> "wss"
-        | "http:" -> "ws"
         | _ -> "ws"
 
-    console.log $"ws connecting to {url.ToString()}"
     WebSocket.Create(url.ToString())
 
 promise {
@@ -94,28 +92,10 @@ let setupPeerConnection polite =
 
     signalingWs, dataApp
 
-let updateUI (peers: Map<string, (DuplexStream<obj> * DuplexStream<string>)>) =
-    let peersEl = document.getElementById ("peers")
-
-    let peerInfo name =
-        $"""
-        <div>{name}</div>
-        """
-
-    peersEl.innerHTML <-
-        $"""
-        <div> My UID: %s{myUid} </div>
-        <div> Number of connections = %d{peers.Count} </div>
-        {peers.Keys
-         |> Seq.map peerInfo
-         |> String.concat " "}
-        """
-
 let addNewConnection myUid otherUid polite =
     let signaling, dataChan = setupPeerConnection polite
 
     peers <- peers.Add(otherUid, (signaling, dataChan))
-    updateUI peers
 
     dataChan.Send("testing data, are we connected yet buddy?")
     dataChan.Subscribe(fun msg -> console.log ($"got msg from [%s{otherUid}]: %s{msg}"))
@@ -137,7 +117,6 @@ websocket.onmessage <-
         | "config::own_uid" as x ->
             myUid <- payload?data?uid
             // setGlobal "uid" (fun () -> logLoud myUid)
-            updateUI peers
             Connect { uid = myUid } |> dispatch
 
             promise {
@@ -166,7 +145,6 @@ websocket.onmessage <-
         | "config::remove_uid" as x ->
             let uid = payload?data?uid
             peers <- peers.Remove(uid)
-            updateUI peers
             PeerRemoved { uid = uid } |> dispatch
 
         | x when x.StartsWith("signaling::") ->
