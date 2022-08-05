@@ -97,8 +97,9 @@ let addNewConnection myUid otherUid polite =
 
     peers <- peers.Add(otherUid, (signaling, dataChan))
 
-    dataChan.Send("testing data, are we connected yet buddy?")
+    dataChan.Send($"hello, this is {myUid}")
     dataChan.Subscribe(fun msg -> console.log ($"got msg from [%s{otherUid}]: %s{msg}"))
+    dataChan.Subscribe(fun msg -> RtcMsg msg |> dispatch)
 
     signaling.Subscribe (fun msg ->
         msg?src <- myUid

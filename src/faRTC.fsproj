@@ -6,6 +6,7 @@
     <Compile Include="Types.fs" />
     <Compile Include="StateMachine.fs" />
     <Compile Include="Theme.fs" />
+    <Compile Include="Toast.fs" />
     <Compile Include="Timer.fs" />
     <Compile Include="MessageStream.fs" />
     <Compile Include="WebRTC.fs" />

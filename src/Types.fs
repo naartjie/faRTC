@@ -21,3 +21,4 @@ type Msg =
     | PeerAdded of Peer
     | PeerRemoved of Peer
     | SelectTab of Tab
+    | RtcMsg of string

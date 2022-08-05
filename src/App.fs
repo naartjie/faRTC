@@ -4,11 +4,13 @@ open Elmish
 open Lit
 open Lit.Elmish
 open Types
+open Browser
 
 let private hmr = HMR.createToken ()
 
 Timer.register ()
 Theme.register ()
+Toast.register ()
 
 let init () =
     { ActiveTab = Connection
@@ -23,6 +25,9 @@ let update msg model =
      | (PeerRemoved peer, Connected info) ->
          { model with Connection = Connected { info with others = info.others |> List.except [ peer ] } }
      | (SelectTab tab, _) -> { model with ActiveTab = tab }
+     | RtcMsg str, _ ->
+         Toast.addMessage str
+         model
      | _ -> failwith "invalid state change"),
     Cmd.none
 
@@ -84,6 +89,10 @@ let renderTabs model dispatch =
         html
             $"""
                 <div class="tabs">
+                    <a @click={Ev(fun _ -> dispatch (SelectTab Vote))} class="tab tab-bordered {if model.ActiveTab = Vote then
+                                                                                                    "tab-active"
+                                                                                                else
+                                                                                                    ""}">Timer</a>
                     <a @click={Ev(fun _ -> dispatch (SelectTab Connection))} class="tab tab-bordered {if model.ActiveTab = Connection then
                                                                                                           "tab-active"
                                                                                                       else
@@ -92,24 +101,31 @@ let renderTabs model dispatch =
                                                                                                      "tab-active"
                                                                                                  else
                                                                                                      ""}">State</a>
-                    <a @click={Ev(fun _ -> dispatch (SelectTab Vote))} class="tab tab-bordered {if model.ActiveTab = Vote then
-                                                                                                    "tab-active"
-                                                                                                else
-                                                                                                    ""}">Vote</a>
                 </div>
                 """
 
     let content =
         match model.ActiveTab with
         | Connection -> connectionInfo model.Connection
-        | State -> html $""" <div>TODO: render state</div> """
-        | Vote -> html $""" <div>TODO: render vote</div> """
+        | State -> html $""" <div>TODO: render state view</div> """
+        | Vote -> html $""" <countdown-timer duration="300" update-title> </countdown-timer> """
 
     html
         $"""
         {tabs}
         {content}
         """
+
+let view model dispatch =
+    html
+        $"""
+        <div class="p-16 max-w-5xl">
+            <h2>Distributed Webs Machine</h2>
+            {renderTabs model dispatch}
+        <div>
+        """
+// <toast-it></toast-it>
+
 
 [<LitElement("app-root")>]
 let app () =
@@ -122,8 +138,4 @@ let app () =
 
     Signaling.register dispatch
 
-    html
-        $"""
-        <h2>Distributed Webs Machine</h2>
-        {renderTabs model dispatch}
-        """
+    view model dispatch
