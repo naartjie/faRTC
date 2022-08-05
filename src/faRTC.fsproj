@@ -4,7 +4,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Types.fs" />
-    <Compile Include="DistributedState.fs" />
+    <Compile Include="StateMachine.fs" />
+    <Compile Include="Theme.fs" />
     <Compile Include="Timer.fs" />
     <Compile Include="MessageStream.fs" />
     <Compile Include="WebRTC.fs" />

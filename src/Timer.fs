@@ -68,15 +68,6 @@ let countdownTimer () =
         setRemaining newRemaining
         setEnd (DateTime.UtcNow.AddMilliseconds newRemaining)
 
-    let timeStr showHundredths remaining =
-        let min = remaining / 1000 / 60
-        let sec = remaining / 1000 % 60
-
-        $"""{min}m%02d{sec}s{if showHundredths then
-                                 $"%02d{remaining / 10 % 100}"
-                             else
-                                 ""}"""
-
     let minSecHun remaining =
         let min = remaining / 1000 / 60
         let sec = remaining / 1000 % 60
@@ -92,8 +83,10 @@ let countdownTimer () =
 
             let setTitle newRemaining =
                 if props.updateTitle.Value then
+                    let (min, sec, _) = minSecHun newRemaining
+
                     let newTitle =
-                        $"""{timeStr false newRemaining}{if running then "" else " ⏸"}"""
+                        $"""{min}m%02d{sec}s{if running then "" else " ⏸"}"""
 
                     if document.title <> newTitle then
                         document.title <- newTitle
@@ -129,26 +122,26 @@ let countdownTimer () =
              else
                  Icons.noIcon)
 
-    let (m, s, _) = minSecHun remaining
+    let (min, sec, _) = minSecHun remaining
 
     html
         $"""
-            <div class="grid grid-flow-col gap-5 text-center auto-cols-max justify-center">
-                <div class="flex flex-col">
-                    <span class="countdown font-mono text-5xl">
-                    <span style="--value:{m};"></span>
-                    </span>
-                    min
-                </div>
-                <div class="flex flex-col">
-                    <span class="countdown font-mono text-5xl">
-                    <span style="--value:{s};"></span>
-                    </span>
-                    sec
-                </div>
+        <div class="grid grid-flow-col gap-5 text-center auto-cols-max justify-center">
+            <div class="flex flex-col">
+                <span class="countdown font-mono text-5xl">
+                <span style="--value:{min};"></span>
+                </span>
+                min
             </div>
-            <div class="btn-group grid grid-flow-col text-center auto-cols-max justify-center">
-                <button @click={Ev(fun _ -> fn ())} class="btn btn-sm btn-secondary">{icon}</button>
-                <button @click={Ev(fun _ -> reset ())} class="btn btn-sm btn-secondary">{Icons.replay}</button>
+            <div class="flex flex-col">
+                <span class="countdown font-mono text-5xl">
+                <span style="--value:{sec};"></span>
+                </span>
+                sec
             </div>
+        </div>
+        <div class="btn-group grid grid-flow-col text-center auto-cols-max justify-center">
+            <button @click={Ev(fun _ -> fn ())} class="btn btn-sm btn-secondary">{icon}</button>
+            <button @click={Ev(fun _ -> reset ())} class="btn btn-sm btn-secondary">{Icons.replay}</button>
+        </div>
         """

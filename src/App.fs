@@ -8,6 +8,7 @@ open Types
 let private hmr = HMR.createToken ()
 
 Timer.register ()
+Theme.register ()
 
 let init () =
     { ActiveTab = Connection
@@ -25,23 +26,90 @@ let update msg model =
      | _ -> failwith "invalid state change"),
     Cmd.none
 
+let connectionInfo2 (connected: Connected) =
+
+    let header =
+        html
+            $"""
+            <tr>
+                <th></th>
+                <th>Name</th>
+                <th>Connected</th>
+                <th>Duration</th>
+            </tr>
+            """
+
+    let rows =
+        connected.others
+        |> List.append [ { connected.me with uid = $"{connected.me.uid} (me 👻)" } ]
+        |> Lit.mapiUnique
+            (fun pc -> pc.uid)
+            (fun i pc ->
+                html
+                    $"""
+                    <tr>
+                        <th>{i + 1}</th>
+                        <td>{pc.uid}</td>
+                        <td>14h17m02s</td>
+                        <td>1m 22s</td>
+                    </tr>
+                    """)
+
+    html
+        $"""
+        <div>{connected.others.Length + 1} nodes</div>
+        <div class="overflow-x-auto">
+            <table class="table table-compact w-full">
+                <thead>
+                    {header}
+                </thead>
+                <tbody>
+                    {rows}
+                </tbody>
+                <tfoot>
+                    {header}
+                </tfoot>
+            </table>
+        </div>
+        """
+
 let connectionInfo =
     function
     | Initializing -> html $"""establishing connection"""
-    | Connected info ->
+    | Connected info -> connectionInfo2 info
+
+let renderTabs model dispatch =
+
+    let tabs =
         html
             $"""
-              <div><small><code>I am:</code></small> {info.me.uid}</div>
-              <div>I am connected to {info.others.Length} other peer(s)</div>
-              {info.others
-               |> Lit.mapUnique (fun o -> o.uid) (fun o -> html $"<div> → {o.uid}</div>")}
-            """
+                <div class="tabs">
+                    <a @click={Ev(fun _ -> dispatch (SelectTab Connection))} class="tab tab-bordered {if model.ActiveTab = Connection then
+                                                                                                          "tab-active"
+                                                                                                      else
+                                                                                                          ""}">Nodes</a>
+                    <a @click={Ev(fun _ -> dispatch (SelectTab State))} class="tab tab-bordered {if model.ActiveTab = State then
+                                                                                                     "tab-active"
+                                                                                                 else
+                                                                                                     ""}">State</a>
+                    <a @click={Ev(fun _ -> dispatch (SelectTab Vote))} class="tab tab-bordered {if model.ActiveTab = Vote then
+                                                                                                    "tab-active"
+                                                                                                else
+                                                                                                    ""}">Vote</a>
+                </div>
+                """
 
-let renderTab model =
-    match model.ActiveTab with
-    | Connection -> connectionInfo model.Connection
-    | State -> html $""" <div>render state</div> """
-    | Vote -> html $""" <div>render vote</div> """
+    let content =
+        match model.ActiveTab with
+        | Connection -> connectionInfo model.Connection
+        | State -> html $""" <div>TODO: render state</div> """
+        | Vote -> html $""" <div>TODO: render vote</div> """
+
+    html
+        $"""
+        {tabs}
+        {content}
+        """
 
 [<LitElement("app-root")>]
 let app () =
@@ -54,25 +122,8 @@ let app () =
 
     Signaling.register dispatch
 
-    let tabActive = "tab-active"
-    let noStyle = ""
-
     html
         $"""
         <h2>Distributed Webs Machine</h2>
-        <div class="tabs">
-            <a @click={Ev(fun _ -> dispatch (SelectTab Connection))} class="tab tab-bordered {if model.ActiveTab = Connection then
-                                                                                                  tabActive
-                                                                                              else
-                                                                                                  noStyle}">Nodes</a>
-            <a @click={Ev(fun _ -> dispatch (SelectTab State))} class="tab tab-bordered {if model.ActiveTab = State then
-                                                                                             tabActive
-                                                                                         else
-                                                                                             noStyle}">State</a>
-            <a @click={Ev(fun _ -> dispatch (SelectTab Vote))} class="tab tab-bordered {if model.ActiveTab = Vote then
-                                                                                            tabActive
-                                                                                        else
-                                                                                            noStyle}">Vote</a>
-        </div>
-        {renderTab model}
+        {renderTabs model dispatch}
         """
